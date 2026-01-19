@@ -53,24 +53,22 @@ php -S localhost:8000 -t public
 
 ## Tests Draaien
 
-### Alle tests
+### Via Composer (aanbevolen)
+
+```bash
+composer test              # Alle tests
+composer test:unit         # Alleen Unit tests
+composer test:functional   # Alleen Functional tests
+composer test:acceptance   # Alleen Acceptance tests
+composer test:coverage     # Unit tests met coverage rapport
+```
+
+### Via Codeception direct
 
 ```bash
 ./vendor/bin/codecept run
-```
-
-### Per suite
-
-```bash
 ./vendor/bin/codecept run Unit
-./vendor/bin/codecept run Functional
-./vendor/bin/codecept run Acceptance
-```
-
-### Met details
-
-```bash
-./vendor/bin/codecept run --steps
+./vendor/bin/codecept run --steps   # Met details
 ```
 
 ## Project Structuur
@@ -142,6 +140,15 @@ public function tryToAccessHomepage(AcceptanceTester $I): void
 - **Gebruiker:** `admin`
 - **Wachtwoord:** `shopware`
 
+## CI/CD
+
+GitHub Actions workflow voor automatische tests:
+
+- **Unit tests** - Draaien bij elke push/PR
+- **Functional tests** - Draaien met MySQL 8.0 service
+
+Workflow: [.github/workflows/tests.yml](.github/workflows/tests.yml)
+
 ## Git Tags
 
 | Tag | Beschrijving |
@@ -149,6 +156,7 @@ public function tryToAccessHomepage(AcceptanceTester $I): void
 | `fase-1` | Shopware 6.7 installatie |
 | `fase-2` | Codeception setup |
 | `fase-3` | Voorbeeld tests |
+| `fase-4` | CI/CD configuratie |
 
 ## Codeception Commando's
 
