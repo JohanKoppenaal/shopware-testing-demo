@@ -1,14 +1,15 @@
 # Shopware 6 Testing Infrastructure Demo
 
-Een complete testing infrastructuur voor Shopware 6.7 met Codeception.
+Een complete testing infrastructuur voor Shopware 6.7 met Codeception en Playwright.
 
 ## Overzicht
 
 Dit project demonstreert een professionele test setup voor Shopware 6:
 
-- **Unit Tests** - Pure PHP unit tests
-- **Functional Tests** - API en HTTP tests
-- **Acceptance Tests** - Storefront browser tests
+- **Unit Tests** - Pure PHP unit tests (Codeception)
+- **Functional Tests** - API en HTTP tests (Codeception)
+- **Acceptance Tests** - Storefront browser tests (Codeception)
+- **E2E Tests** - End-to-end browser tests (Playwright)
 
 ## Vereisten
 
@@ -27,6 +28,7 @@ Dit project demonstreert een professionele test setup voor Shopware 6:
 git clone https://github.com/JohanKoppenaal/shopware-testing-demo.git
 cd shopware-testing-demo
 composer install
+npm install
 ```
 
 ### 2. Database configuratie
@@ -51,24 +53,38 @@ bin/console system:install --basic-setup --create-database
 php -S localhost:8000 -t public
 ```
 
-## Tests Draaien
-
-### Via Composer (aanbevolen)
+### 5. Playwright browsers installeren
 
 ```bash
+npx playwright install chromium
+```
+
+## Tests Draaien
+
+### Codeception (PHP)
+
+```bash
+# Via Composer (aanbevolen)
 composer test              # Alle tests
 composer test:unit         # Alleen Unit tests
 composer test:functional   # Alleen Functional tests
 composer test:acceptance   # Alleen Acceptance tests
 composer test:coverage     # Unit tests met coverage rapport
-```
 
-### Via Codeception direct
-
-```bash
+# Via Codeception direct
 ./vendor/bin/codecept run
 ./vendor/bin/codecept run Unit
 ./vendor/bin/codecept run --steps   # Met details
+```
+
+### Playwright (TypeScript)
+
+```bash
+# Via npm
+npm run test:e2e           # Alle E2E tests
+npm run test:e2e:headed    # Met browser zichtbaar
+npm run test:e2e:ui        # Playwright UI mode
+npm run test:e2e:report    # Open HTML rapport
 ```
 
 ## Project Structuur
@@ -77,11 +93,14 @@ composer test:coverage     # Unit tests met coverage rapport
 shopware-testing-demo/
 ├── tests/
 │   ├── Acceptance/
-│   │   └── StorefrontCest.php    # Browser tests
+│   │   └── StorefrontCest.php    # Codeception browser tests
 │   ├── Functional/
 │   │   └── ApiCest.php           # API tests
 │   ├── Unit/
 │   │   └── ExampleTest.php       # Unit tests
+│   ├── playwright/
+│   │   ├── storefront.spec.ts    # Playwright storefront tests
+│   │   └── navigation.spec.ts    # Playwright navigation tests
 │   ├── Support/
 │   │   ├── AcceptanceTester.php
 │   │   ├── FunctionalTester.php
@@ -90,13 +109,18 @@ shopware-testing-demo/
 │   ├── Acceptance.suite.yml
 │   ├── Functional.suite.yml
 │   └── Unit.suite.yml
-├── codeception.yml               # Hoofd configuratie
+├── .github/
+│   └── workflows/
+│       └── tests.yml             # GitHub Actions CI
+├── codeception.yml               # Codeception configuratie
+├── playwright.config.ts          # Playwright configuratie
+├── package.json                  # Node.js dependencies
 └── README.md
 ```
 
 ## Test Suites
 
-### Unit Tests
+### Unit Tests (Codeception)
 
 Pure PHP tests zonder externe dependencies.
 
@@ -108,7 +132,7 @@ public function testArrayOperations(): void
 }
 ```
 
-### Functional Tests
+### Functional Tests (Codeception)
 
 HTTP requests naar de applicatie.
 
@@ -121,9 +145,9 @@ public function tryApiHealthCheck(FunctionalTester $I): void
 }
 ```
 
-### Acceptance Tests
+### Acceptance Tests (Codeception)
 
-Browser-gebaseerde tests voor de storefront.
+Browser-gebaseerde tests voor de storefront (PhpBrowser).
 
 ```php
 public function tryToAccessHomepage(AcceptanceTester $I): void
@@ -134,6 +158,19 @@ public function tryToAccessHomepage(AcceptanceTester $I): void
 }
 ```
 
+### E2E Tests (Playwright)
+
+Echte browser tests met Chromium.
+
+```typescript
+test('homepage loads successfully', async ({ page }) => {
+    await page.goto('/');
+    const title = await page.title();
+    expect(title.length).toBeGreaterThan(0);
+    await expect(page.locator('body')).toBeVisible();
+});
+```
+
 ## Admin Toegang
 
 - **URL:** http://localhost:8000/admin
@@ -142,10 +179,18 @@ public function tryToAccessHomepage(AcceptanceTester $I): void
 
 ## CI/CD
 
-GitHub Actions workflow voor automatische tests:
+GitHub Actions workflow voor automatische tests met 3 jobs:
 
-- **Unit tests** - Draaien bij elke push/PR
-- **Functional tests** - Draaien met MySQL 8.0 service
+| Job | Beschrijving |
+|-----|-------------|
+| **unit-tests** | PHP Unit tests |
+| **functional-tests** | PHP Functional tests met MySQL |
+| **playwright-tests** | Playwright E2E tests met MySQL |
+
+Features:
+- PHP 8.4 en Node.js 20
+- MySQL 8.0 service container
+- Playwright rapport als artifact (30 dagen)
 
 Workflow: [.github/workflows/tests.yml](.github/workflows/tests.yml)
 
@@ -157,6 +202,8 @@ Workflow: [.github/workflows/tests.yml](.github/workflows/tests.yml)
 | `fase-2` | Codeception setup |
 | `fase-3` | Voorbeeld tests |
 | `fase-4` | CI/CD configuratie |
+| `fase-5` | Playwright E2E testing |
+| `fase-6` | Playwright in GitHub Actions |
 
 ## Codeception Commando's
 
@@ -171,6 +218,32 @@ Workflow: [.github/workflows/tests.yml](.github/workflows/tests.yml)
 # Tests met coverage
 ./vendor/bin/codecept run --coverage --coverage-html
 ```
+
+## Playwright Commando's
+
+```bash
+# Nieuwe test genereren
+npx playwright codegen localhost:8000
+
+# Specifieke test file draaien
+npx playwright test storefront.spec.ts
+
+# Debug mode
+npx playwright test --debug
+
+# Trace viewer
+npx playwright show-trace trace.zip
+```
+
+## Test Totalen
+
+| Framework | Aantal Tests |
+|-----------|-------------|
+| Codeception Unit | 3 |
+| Codeception Functional | 1 |
+| Codeception Acceptance | 2 |
+| Playwright E2E | 7 |
+| **Totaal** | **13** |
 
 ## Licentie
 
