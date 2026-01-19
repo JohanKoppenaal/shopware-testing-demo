@@ -56,7 +56,12 @@
     ],
     "post-update-cmd": [
       "@auto-scripts"
-    ]
+    ],
+    "test": "./vendor/bin/codecept run",
+    "test:unit": "./vendor/bin/codecept run Unit",
+    "test:functional": "./vendor/bin/codecept run Functional",
+    "test:acceptance": "./vendor/bin/codecept run Acceptance",
+    "test:coverage": "./vendor/bin/codecept run Unit --coverage-html tests/_output/coverage"
   },
   "extra": {
     "symfony": {
