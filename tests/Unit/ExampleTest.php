@@ -11,19 +11,27 @@ class ExampleTest extends Unit
 {
     protected UnitTester $tester;
 
-    public function testArrayContainsValue(): void
+    public function testArrayOperations(): void
     {
-        $array = ['foo', 'bar', 'baz'];
-        
-        $this->assertContains('bar', $array);
+        $array = ['shopware', 'testing', 'demo'];
+
+        $this->assertContains('testing', $array);
         $this->assertCount(3, $array);
     }
 
     public function testStringOperations(): void
     {
-        $string = 'Hello Shopware';
-        
-        $this->assertStringContainsString('Shopware', $string);
-        $this->assertEquals(14, strlen($string));
+        $version = 'Shopware 6.7';
+
+        $this->assertStringContainsString('6.7', $version);
+        $this->assertStringStartsWith('Shopware', $version);
+    }
+
+    public function testBasicMath(): void
+    {
+        $result = 2 + 2;
+
+        $this->assertEquals(4, $result);
+        $this->assertIsInt($result);
     }
 }

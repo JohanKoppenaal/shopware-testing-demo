@@ -1,12 +1,9 @@
 actor: FunctionalTester
 modules:
     enabled:
-        - Symfony:
-            app_path: 'src'
-            environment: 'test'
-        - Doctrine:
-            depends: Symfony
-            cleanup: true
+        - PhpBrowser:
+            url: 'http://localhost:8000'
         - REST:
-            depends: Symfony
+            url: 'http://localhost:8000'
+            depends: PhpBrowser
         - Asserts
