@@ -1,0 +1,30 @@
+{
+  "name": "shopware-testing-demo",
+  "version": "1.0.0",
+  "description": "Een complete testing infrastructuur voor Shopware 6.7 met Codeception.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohanKoppenaal/shopware-testing-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JohanKoppenaal/shopware-testing-demo/issues"
+  },
+  "homepage": "https://github.com/JohanKoppenaal/shopware-testing-demo#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}
